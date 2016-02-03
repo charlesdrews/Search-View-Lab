@@ -113,6 +113,21 @@ public class ShoppingSQLiteOpenHelper extends SQLiteOpenHelper{
         return deleteNum;
     }
 
+    public Cursor search(String query) {
+        if (query.isEmpty()) { return getShoppingList(); }
+
+        SQLiteDatabase db = getReadableDatabase();
+        return db.query(
+                SHOPPING_LIST_TABLE_NAME,
+                null,           // columns (null = *)
+                COL_ITEM_NAME + " LIKE ? OR " + COL_ITEM_TYPE + " LIKE ?",
+                new String[]{ "%"+query+"%", "%"+query+"%" },
+                null,           // group by
+                null,           // having
+                COL_ITEM_NAME   // order by
+        );
+    }
+
     private void loadShoppingInfo(SQLiteDatabase db) throws IOException {
         final Resources resources = mHelperContext.getResources();
         InputStream inputStream = resources.openRawResource(R.raw.prepopulated_shopping_list);
